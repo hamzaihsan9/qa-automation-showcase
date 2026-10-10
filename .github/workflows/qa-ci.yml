@@ -9,9 +9,9 @@ on:
 
 jobs:
   test:
-    name: Run API & UI Automated Tests
+    name: Run Automated Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
       - name: Checkout Code
@@ -28,19 +28,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Playwright Browsers & OS Dependencies
+      - name: Install Playwright Browsers
         run: |
           playwright install chromium --with-deps
 
-      - name: Run Smoke Tests
+      - name: Run Test Suite
         run: |
-          pytest -m smoke -v
+          pytest -v --browser chromium --html=report.html --self-contained-html
 
-      - name: Run Full Regression Test Suite
-        run: |
-          pytest -v --html=report.html --self-contained-html
-
-      - name: Upload Test Report & Artifacts
+      - name: Upload Test Report Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:

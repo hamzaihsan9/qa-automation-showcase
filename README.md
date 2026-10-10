@@ -1,183 +1,168 @@
-# 🚀 Enterprise QA Automation Showcase
+# QA Automation Showcase
 
-[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![Playwright](https://img.shields.io/badge/Playwright-1.40+-2EAD33?style=flat&logo=playwright&logoColor=white)](https://playwright.dev/)
-[![Pytest](https://img.shields.io/badge/Pytest-8.0+-0A9EDC?style=flat&logo=pytest&logoColor=white)](https://docs.pytest.org/)
-[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white)](.github/workflows/qa-ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Test automation framework for web UI and REST APIs built with Python, Playwright, and Pytest.
 
-An enterprise-grade test automation engineering showcase demonstrating production-grade testing practices for full-stack systems. Built with **Python**, **Playwright**, and **Pytest**, this repository models realistic multi-layer test strategies spanning UI End-to-End flows, REST API contract validation, CI/CD automation, and systematic defect tracking.
+The project demonstrates test architecture using the Page Object Model (POM) pattern for frontend testing against SauceDemo, and integration/contract tests against the Restful-Booker and ReqRes REST APIs.
 
 ---
 
-## 🎯 Architecture & Coverage Overview
+## Test Coverage
 
-The framework adopts the **Test Pyramid** strategy with two core validation layers:
+### UI Automation (Playwright)
+Target: https://www.saucedemo.com/
 
-```
-           / \
-          /   \
-         / E2E \         Browser UI Workflows (Playwright + POM)
-        /  UI   \        SauceDemo E-Commerce Catalog & Checkout
-       /---------\
-      /   API     \      REST API Integration & Contract Tests
-     / Integration \     Restful-Booker (CRUD/Auth) & ReqRes (User Mgmt)
-    /---------------\
-```
+- Page Object Model implementation separating selectors from test assertions.
+- Authentication tests covering successful login, locked-out users, invalid credentials, empty field validations, and user logout.
+- Inventory catalog tests covering item count, dynamic sorting (A-Z, Z-A, price low-to-high, price high-to-low), and shopping cart badge counter updates.
+- Shopping cart tests covering item review, removal, and navigation back to the catalog.
+- End-to-end checkout flow verifying customer info form validation, subtotal and tax calculation, and order completion.
 
-### 1. Web UI Automation (Playwright POM)
-- **Target Application:** SauceDemo e-commerce portal ([saucedemo.com](https://www.saucedemo.com/)).
-- **Pattern:** Page Object Model (POM) decoupling locators from test logic.
-- **Scenarios:**
-  - Standard user login, invalid credentials, empty field validations, and account lockout handling.
-  - Dynamic catalog sorting (alphabetical ascending/descending, price low-to-high, price high-to-low).
-  - Dynamic cart badge updates upon item addition and deletion.
-  - Multi-step end-to-end checkout flow with subtotal, tax calculation, and order confirmation verification.
+### API Testing (Pytest + Requests)
+Targets: Restful-Booker and ReqRes
 
-### 2. REST API Automation (Pytest + Requests)
-- **Target Services:**
-  - [Restful-Booker](https://restful-booker.herokuapp.com): Ping health checks, admin token generation, booking creation, retrieval, full updates (`PUT`), partial updates (`PATCH`), deletion (`DELETE`), and negative 404 validation.
-  - [ReqRes](https://reqres.in): Paginated user listing, schema contract assertions, user registration, authentication, and user mutations.
+- Restful-Booker: Ping health check, admin token authentication, booking creation, retrieval, full update (PUT), partial update (PATCH), deletion (DELETE), and 404 validation.
+- ReqRes: Paginated user lists, schema contract assertions, user creation, updates, and deletion with handling for third-party rate limits.
 
 ---
 
-## 📁 Repository Structure
+## Project Structure
 
 ```
 qa-automation-showcase/
 ├── .github/
 │   └── workflows/
-│       └── qa-ci.yml                # Automated GitHub Actions test pipeline
+│       └── qa-ci.yml           # GitHub Actions CI workflow
 ├── docs/
 │   ├── bug-reports/
 │   │   ├── BUG-001-checkout-postal-code.md
 │   │   └── BUG-002-inventory-sorting-persistence.md
-│   └── test-strategy.md            # Enterprise QA test methodology & pyramid
+│   └── test-strategy.md        # Test strategy and pyramid documentation
 ├── pages/
-│   ├── __init__.py                 # POM exports
-│   ├── base_page.py                # Reusable Playwright wrappers & explicit waits
-│   ├── login_page.py               # Authentication elements & methods
-│   ├── inventory_page.py           # Product catalog, sorting, and cart actions
-│   ├── cart_page.py                # Reviewing & removing items in the cart
-│   └── checkout_page.py            # Customer info, summary calculation, finish
+│   ├── __init__.py             # Page object exports
+│   ├── base_page.py            # Base page with Playwright wrappers and waits
+│   ├── login_page.py           # Login page actions and locators
+│   ├── inventory_page.py       # Catalog, sorting, and cart actions
+│   ├── cart_page.py            # Cart item verification and removal
+│   └── checkout_page.py        # Checkout form, summary, and confirmation
 ├── tests/
 │   ├── __init__.py
-│   ├── conftest.py                 # Pytest fixtures, API clients & HTML hooks
+│   ├── conftest.py             # Pytest fixtures and reporting hooks
 │   ├── api/
-│   │   ├── __init__.py
-│   │   ├── client.py               # REST API clients (Booking & ReqRes)
-│   │   ├── test_auth_api.py        # Token generation & login/register tests
-│   │   ├── test_booking_api.py     # Booking CRUD & lifecycle tests
-│   │   └── test_users_api.py       # User management & pagination tests
+│   │   ├── client.py           # API clients for Restful-Booker and ReqRes
+│   │   ├── test_auth_api.py    # Auth and token generation tests
+│   │   ├── test_booking_api.py # Booking CRUD lifecycle tests
+│   │   └── test_users_api.py   # User management and pagination tests
 │   └── ui/
-│       ├── __init__.py
-│       ├── test_login.py           # UI login positive & negative scenarios
-│       ├── test_inventory.py       # Catalog sorting & cart badge checks
-│       └── test_checkout_e2e.py    # Complete end-to-end purchasing workflow
-├── pytest.ini                      # Test discovery, custom markers & options
-├── requirements.txt                # Pinned framework dependencies
-└── README.md                       # Documentation & execution guide
+│       ├── test_login.py       # UI authentication tests
+│       ├── test_inventory.py   # Catalog sorting and badge tests
+│       └── test_checkout_e2e.py # End-to-end purchasing workflow tests
+├── pytest.ini                  # Pytest configuration and markers
+├── requirements.txt            # Python dependencies
+└── README.md
 ```
 
 ---
 
-## ⚡ Quickstart & Setup
+## Setup and Installation
 
-### 1. Prerequisites
-- Python 3.10+ (tested on Python 3.12 and 3.14)
+### Prerequisites
+- Python 3.10+
 - Git
 
-### 2. Clone and Setup Environment
+### Installation
+
+1. Clone the repository:
 ```bash
-# Clone the repository
 git clone git@github.com:hamzaihsan9/qa-automation-showcase.git
 cd qa-automation-showcase
+```
 
-# Create and activate virtual environment
+2. Create and activate a virtual environment:
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
-# Install dependencies
+3. Install dependencies:
+```bash
 pip install -r requirements.txt
+```
 
-# Install Playwright browser binaries
+4. Install the Playwright Chromium browser:
+```bash
 playwright install chromium
 ```
 
 ---
 
-## 🧪 Running the Test Suite
+## Running Tests
 
-All tests can be executed via `pytest` with granular control using markers or directory paths:
-
-### Run Everything
+### Run all tests
 ```bash
 pytest
 ```
-*Automatically generates a self-contained HTML execution report at `report.html`.*
+Generates a self-contained HTML report at `report.html`.
 
-### Run by Domain / Layer
+### Run by category
 ```bash
-# Run only REST API test suites
+# Run only API tests
 pytest tests/api/
 
-# Run only UI browser test suites
+# Run only UI tests
 pytest tests/ui/
 ```
 
-### Run by Pytest Marker
+### Run by pytest marker
 ```bash
-# Run smoke tests (fast critical path verification)
+# Smoke tests
 pytest -m smoke
 
-# Run full regression suite
+# Full regression suite
 pytest -m regression
 
-# Run end-to-end checkout journeys
+# End-to-end checkout flow
 pytest -m e2e
 ```
 
-### Headed Execution (Watch Browser in Action)
+### Run UI tests in headed mode
 ```bash
 pytest tests/ui/ --headed --slowmo 500
 ```
 
 ---
 
-## 📊 Test Reporting
+## Reporting
 
-The framework generates rich, self-contained HTML execution reports via `pytest-html`:
-- Open `report.html` in your browser:
-  ```bash
-  # Linux
-  xdg-open report.html
-  ```
-- **Automated Failure Screenshots:** If any UI test encounters an assertion error, a full-page screenshot is automatically captured and embedded directly into the test result row under `test-results/screenshots/`.
+- An HTML test report is generated automatically at `report.html` after every test run.
+- On test failure, full-page screenshots are saved automatically to `test-results/screenshots/` and embedded in the HTML report.
 
----
-
-## 🔄 CI/CD Automation
-
-Every code push and pull request triggers [`.github/workflows/qa-ci.yml`](.github/workflows/qa-ci.yml):
-1. Provisions Ubuntu runner with Python environment caching.
-2. Installs dependencies and headless Chromium with OS-level libraries.
-3. Executes `@pytest.mark.smoke` checks.
-4. Executes the full regression suite.
-5. Archives `report.html` and failure screenshots as build artifacts with 14-day retention.
+To view the report:
+```bash
+xdg-open report.html
+```
 
 ---
 
-## 🐞 Bug Reporting
+## CI/CD Pipeline
 
-Formal industry-standard defect reports are documented under [`docs/bug-reports/`](docs/bug-reports/):
-- **BR-001:** [Inconsistent Validation Formatting on Checkout Step One](docs/bug-reports/BUG-001-checkout-postal-code.md)
-- **BR-002:** [Catalog Sort State Resets on Back Navigation](docs/bug-reports/BUG-002-inventory-sorting-persistence.md)
+The repository includes a GitHub Actions workflow in `.github/workflows/qa-ci.yml` that runs on every push and pull request to `main`. It:
+- Sets up Python 3.12 with pip caching.
+- Installs dependencies and Playwright browser binaries.
+- Executes the test suite with Chromium.
+- Uploads `report.html` and failure screenshots as workflow artifacts.
 
 ---
 
-## 👤 Author
+## Defect Reports
 
-**Hamza Ihsan**  
-Full-Stack & QA Automation Engineer  
-- GitHub: [@hamzaihsan9](https://github.com/hamzaihsan9)
+Documented bug reports following standard industry formats are located in `docs/bug-reports/`:
+- `BUG-001-checkout-postal-code.md`: Form validation wording discrepancy and whitespace handling.
+- `BUG-002-inventory-sorting-persistence.md`: Catalog sort filter resets on navigation back from cart.
+
+---
+
+## Author
+
+Hamza Ihsan
+- GitHub: https://github.com/hamzaihsan9
 - Email: hamza.ihsan.f@gmail.com

@@ -14,6 +14,7 @@ class TestLogin:
         """Verify standard user can log in and view product catalog."""
         login_page.load()
         login_page.login("standard_user", "secret_sauce")
+        inventory_page.wait_for_url_contains("inventory.html")
 
         assert inventory_page.is_loaded(), "Inventory page did not display after standard login"
         assert "/inventory.html" in inventory_page.get_current_url()
