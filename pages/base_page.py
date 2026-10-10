@@ -12,9 +12,12 @@ class BasePage:
         self.base_url = base_url
 
     def navigate(self, path: str = "") -> None:
-        """Navigate to relative or absolute path."""
+        """Navigate to relative or absolute path with automatic retry on network lag."""
         url = f"{self.base_url}/{path}".rstrip("/") if not path.startswith("http") else path
-        self.page.goto(url, wait_until="domcontentloaded")
+        try:
+            self.page.goto(url, wait_until="domcontentloaded", timeout=45000)
+        except Exception:
+            self.page.goto(url, wait_until="domcontentloaded", timeout=45000)
 
     def get_title(self) -> str:
         """Return the current document title."""

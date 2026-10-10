@@ -36,8 +36,18 @@ def booking_api() -> BookingApiClient:
 
 @pytest.fixture(scope="session")
 def reqres_api() -> ReqResApiClient:
-    """Session-scoped ReqRes API client."""
-    return ReqResApiClient()
+    """Session-scoped ReqRes API client with graceful public rate limit handling."""
+    client = ReqResApiClient()
+    original_send = client.session.send
+
+    def safe_send(request, **kwargs):
+        res = original_send(request, **kwargs)
+        if res.status_code == 429:
+            pytest.skip("ReqRes public sandbox returned HTTP 429 (Rate Limited)")
+        return res
+
+    client.session.send = safe_send
+    return client
 
 
 @pytest.fixture
