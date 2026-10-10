@@ -1,0 +1,29 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Test reports & artifacts
+test-results/
+report.html
+report/
+allure-results/
+allure-report/
+*.png
+*.webm
+*.zip
+
+# Environment & IDE
+.env
+.idea/
+.vscode/
+*.swp
+*.swo
