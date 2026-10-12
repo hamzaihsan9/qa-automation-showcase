@@ -145,10 +145,10 @@ def authenticated_session(page: Page) -> InventoryPage:
     login.load()
     login.login("standard_user", "secret_sauce")
     inv = InventoryPage(page)
-    try:
-        page.wait_for_url("**/inventory.html", timeout=15000)
-    except Exception:
-        pass
+    for _ in range(4):
+        if inv.is_loaded():
+            return inv
+        page.wait_for_timeout(1000)
     assert inv.is_loaded(), "Inventory page failed to load after login"
     return inv
 

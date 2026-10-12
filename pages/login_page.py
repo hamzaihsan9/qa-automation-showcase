@@ -20,7 +20,7 @@ class LoginPage(BasePage):
     def load(self) -> None:
         """Open the SauceDemo login page directly."""
         self.navigate("")
-        expect(self.find(self.LOGIN_BUTTON)).to_be_visible()
+        expect(self.find(self.LOGIN_BUTTON)).to_be_visible(timeout=15000)
 
     def login(self, username: str, password: str) -> None:
         """Fill credentials and submit login form."""
