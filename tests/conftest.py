@@ -2,6 +2,7 @@
 
 import os
 import pytest
+import requests
 from datetime import datetime
 from typing import Dict, Any, Generator
 from playwright.sync_api import Page
@@ -30,8 +31,21 @@ def pytest_configure(config):
 
 @pytest.fixture(scope="session")
 def booking_api() -> BookingApiClient:
-    """Session-scoped Restful-Booker API client."""
-    return BookingApiClient()
+    """Session-scoped Restful-Booker API client with graceful sandbox outage handling."""
+    client = BookingApiClient()
+    original_send = client.session.send
+
+    def safe_send(request, **kwargs):
+        try:
+            res = original_send(request, **kwargs)
+            if res.status_code in (429, 502, 503, 504):
+                pytest.skip(f"Restful-Booker public sandbox returned HTTP {res.status_code}")
+            return res
+        except requests.exceptions.RequestException as exc:
+            pytest.skip(f"Restful-Booker network unavailable: {exc}")
+
+    client.session.send = safe_send
+    return client
 
 
 @pytest.fixture(scope="session")
@@ -41,10 +55,13 @@ def reqres_api() -> ReqResApiClient:
     original_send = client.session.send
 
     def safe_send(request, **kwargs):
-        res = original_send(request, **kwargs)
-        if res.status_code == 429:
-            pytest.skip("ReqRes public sandbox returned HTTP 429 (Rate Limited)")
-        return res
+        try:
+            res = original_send(request, **kwargs)
+            if res.status_code in (429, 502, 503, 504):
+                pytest.skip(f"ReqRes public sandbox returned HTTP {res.status_code} (Rate Limited / Outage)")
+            return res
+        except requests.exceptions.RequestException as exc:
+            pytest.skip(f"ReqRes network unavailable: {exc}")
 
     client.session.send = safe_send
     return client

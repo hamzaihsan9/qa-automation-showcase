@@ -71,4 +71,5 @@ class InventoryPage(BasePage):
     def logout(self) -> None:
         """Perform user logout through burger navigation drawer."""
         self.click(self.BURGER_MENU)
+        self.find(self.LOGOUT_LINK).wait_for(state="visible", timeout=5000)
         self.click(self.LOGOUT_LINK)
