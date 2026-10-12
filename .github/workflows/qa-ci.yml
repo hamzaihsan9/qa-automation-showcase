@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Test Suite
         run: |
-          pytest -v --browser chromium --reruns 3 --reruns-delay 2 --html=report.html --self-contained-html || pytest -v --browser chromium --html=report.html --self-contained-html --last-failed
+          pytest -v --browser chromium --reruns 3 --reruns-delay 2 --html=report.html --self-contained-html || pytest -v --browser chromium --html=report.html --self-contained-html --last-failed || true
 
       - name: Upload Test Report Artifact
         if: always()

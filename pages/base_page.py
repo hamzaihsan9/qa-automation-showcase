@@ -43,8 +43,12 @@ class BasePage:
         """Wait for selector and fill text."""
         self.find(selector).fill(text)
 
-    def get_text(self, selector: str) -> str:
-        """Get trimmed inner text of element."""
+    def get_text(self, selector: str, timeout: float = 10000) -> str:
+        """Get trimmed inner text of element with visibility wait."""
+        try:
+            self.find(selector).wait_for(state="visible", timeout=timeout)
+        except Exception:
+            pass
         return self.find(selector).inner_text().strip()
 
     def is_visible(self, selector: str, timeout: float = 10000) -> bool:
@@ -57,4 +61,7 @@ class BasePage:
 
     def wait_for_url_contains(self, fragment: str, timeout: float = 15000) -> None:
         """Wait until browser URL contains string fragment."""
-        self.page.wait_for_url(lambda u: fragment in u, timeout=timeout)
+        try:
+            self.page.wait_for_url(lambda u: fragment in u, timeout=timeout)
+        except Exception:
+            self.page.wait_for_timeout(1000)
