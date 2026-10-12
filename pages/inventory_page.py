@@ -67,6 +67,7 @@ class InventoryPage(BasePage):
     def select_sort_option(self, option_value: str) -> None:
         """Select sorting order: 'az', 'za', 'lohi', 'hilo'."""
         self.find(self.SORT_DROPDOWN).select_option(option_value)
+        self.page.wait_for_timeout(300)
 
     def logout(self) -> None:
         """Perform user logout through burger navigation drawer."""

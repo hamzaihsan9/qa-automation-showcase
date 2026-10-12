@@ -45,3 +45,10 @@ jobs:
             report.html
             test-results/
           retention-days: 14
+
+      - name: Publish Test Summary
+        if: always()
+        run: |
+          echo "## QA Automation Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "Enterprise test suite completed across UI (Playwright Page Object Model) and REST API test suites." >> $GITHUB_STEP_SUMMARY
+

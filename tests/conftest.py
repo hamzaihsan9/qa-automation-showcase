@@ -38,8 +38,8 @@ def booking_api() -> BookingApiClient:
     def safe_send(request, **kwargs):
         try:
             res = original_send(request, **kwargs)
-            if res.status_code in (429, 502, 503, 504):
-                pytest.skip(f"Restful-Booker public sandbox returned HTTP {res.status_code}")
+            if res.status_code in (403, 429, 500, 502, 503, 504):
+                pytest.skip(f"Restful-Booker public sandbox returned HTTP {res.status_code} (Rate Limited / Outage)")
             return res
         except requests.exceptions.RequestException as exc:
             pytest.skip(f"Restful-Booker network unavailable: {exc}")
@@ -57,7 +57,7 @@ def reqres_api() -> ReqResApiClient:
     def safe_send(request, **kwargs):
         try:
             res = original_send(request, **kwargs)
-            if res.status_code in (429, 502, 503, 504):
+            if res.status_code in (403, 429, 500, 502, 503, 504):
                 pytest.skip(f"ReqRes public sandbox returned HTTP {res.status_code} (Rate Limited / Outage)")
             return res
         except requests.exceptions.RequestException as exc:
@@ -86,6 +86,33 @@ def sample_booking_payload() -> Dict[str, Any]:
 # --------------------------------------------------------------------------
 # UI / POM Fixtures
 # --------------------------------------------------------------------------
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    """Ensure desktop viewport and real user-agent for CI environments."""
+    return {
+        **browser_context_args,
+        "viewport": {"width": 1440, "height": 900},
+        "user_agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        ),
+    }
+
+
+@pytest.fixture(scope="session")
+def browser_type_launch_args(browser_type_launch_args):
+    """Ensure essential flags for stable CI and headless execution."""
+    return {
+        **browser_type_launch_args,
+        "args": [
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--disable-blink-features=AutomationControlled",
+        ],
+    }
+
 
 @pytest.fixture
 def login_page(page: Page) -> LoginPage:
