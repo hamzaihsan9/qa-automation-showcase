@@ -65,9 +65,21 @@ class InventoryPage(BasePage):
         self.click(self.CART_LINK)
 
     def select_sort_option(self, option_value: str) -> None:
-        """Select sorting order: 'az', 'za', 'lohi', 'hilo'."""
+        """Select sorting order: 'az', 'za', 'lohi', 'hilo' with dynamic DOM wait."""
         self.find(self.SORT_DROPDOWN).select_option(option_value)
-        self.page.wait_for_timeout(300)
+        # Wait dynamically for DOM re-order to settle
+        for _ in range(10):
+            self.page.wait_for_timeout(200)
+            items = self.find(self.ITEM_NAMES).all_inner_texts()
+            if items:
+                if option_value == "az" and items[0].startswith("Sauce Labs B"):
+                    break
+                elif option_value == "za" and items[0].startswith("Test"):
+                    break
+                elif option_value == "lohi" and self.get_all_item_prices()[0] < 10.0:
+                    break
+                elif option_value == "hilo" and self.get_all_item_prices()[0] > 40.0:
+                    break
 
     def logout(self) -> None:
         """Perform user logout through burger navigation drawer."""

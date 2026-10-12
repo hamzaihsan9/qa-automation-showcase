@@ -14,7 +14,10 @@ class TestLogin:
         """Verify standard user can log in and view product catalog."""
         login_page.load()
         login_page.login("standard_user", "secret_sauce")
-        inventory_page.wait_for_url_contains("inventory.html")
+        for _ in range(5):
+            if inventory_page.is_loaded():
+                break
+            login_page.page.wait_for_timeout(500)
 
         assert inventory_page.is_loaded(), "Inventory page did not display after standard login"
         assert "/inventory.html" in inventory_page.get_current_url()
@@ -59,4 +62,8 @@ class TestLogin:
         assert inventory_page.is_loaded()
 
         inventory_page.logout()
+        for _ in range(5):
+            if login_page.is_visible(login_page.LOGIN_BUTTON):
+                break
+            login_page.page.wait_for_timeout(500)
         assert login_page.is_visible(login_page.LOGIN_BUTTON)
